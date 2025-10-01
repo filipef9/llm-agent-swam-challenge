@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "vscodevim.vim",
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.flake8"
+    ]
+}
