@@ -1,3 +1,3 @@
-from configuration import Configuration
+from .configuration import Configuration
 
 config = Configuration().config
