@@ -1,0 +1,5 @@
+langchain==0.3.27
+langchain-docling==1.1.0
+langchain-huggingface==0.3.1
+langchain-qdrant==0.2.1
+sentence-transformers==5.1.1
