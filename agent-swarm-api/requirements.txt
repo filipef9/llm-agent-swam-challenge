@@ -1,2 +1,3 @@
 fastapi[standard]
 langgraph
+langchain-anthropic
