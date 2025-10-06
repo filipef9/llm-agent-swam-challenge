@@ -10,8 +10,8 @@ def get_llm() -> BaseChatModel:
     return ChatAnthropic(model="claude-sonnet-4-20250514", temperature=0.0)
 
 
-def get_knowledge_agent() -> KnowledgeAgent:
-    return KnowledgeAgent()
+def get_knowledge_agent(llm: BaseChatModel = Depends(get_llm)) -> KnowledgeAgent:
+    return KnowledgeAgent(llm=llm)
 
 
 def get_customer_support_agent() -> CustomerSupportAgent:
