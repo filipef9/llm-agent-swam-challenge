@@ -9,6 +9,7 @@ from langchain_core.prompts import (
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
 )
+from langchain_core.retrievers import BaseRetriever
 from langchain_core.tools import BaseTool
 from langgraph.graph import END, START, StateGraph
 
@@ -16,7 +17,12 @@ from app.domain.models import KnowledgeAgentState, RouterRetriever
 
 
 class KnowledgeAgent:
-    def __init__(self, llm: BaseChatModel, web_search_tool: BaseTool):
+    def __init__(
+        self,
+        llm: BaseChatModel,
+        vector_store_retriever: BaseRetriever,
+        web_search_tool: BaseTool,
+    ):
         graph = StateGraph(KnowledgeAgentState)
 
         graph.add_node("router_question", self.__router_question_node)
@@ -45,6 +51,7 @@ class KnowledgeAgent:
 
         self.graph = graph
         self.llm = llm
+        self.vector_store_retriever = vector_store_retriever
         self.web_search_tool = web_search_tool
 
     def __router_question_node(self, state: KnowledgeAgentState) -> KnowledgeAgentState:
@@ -82,7 +89,11 @@ class KnowledgeAgent:
     def __retriever_from_vector_store_node(
         self, state: KnowledgeAgentState
     ) -> KnowledgeAgentState:
-        return {"knowledgebase": "mock documents from vector store."}
+
+        message = state.message
+        documents = self.vector_store_retriever.invoke(message)
+        knowledgebase = "\n\n".join(document.page_content for document in documents)
+        return {"knowledgebase": knowledgebase}
 
     def __retriever_from_web_search_node(
         self, state: KnowledgeAgentState

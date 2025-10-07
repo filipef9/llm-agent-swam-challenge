@@ -1,15 +1,30 @@
 from fastapi import Depends
+from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.retrievers import BaseRetriever
 from langchain_core.tools import BaseTool
+from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_qdrant import QdrantVectorStore
 from langchain_tavily import TavilySearch
 
 from app.application.agents import CustomerSupportAgent, KnowledgeAgent, RouterAgent
 from app.application.usecases import ChatUseCase
+from app.utils import config
 
 
 def get_llm() -> BaseChatModel:
     return ChatAnthropic(model="claude-sonnet-4-20250514", temperature=0.0)
+
+
+def get_vector_store_retriever(llm: BaseChatModel = Depends(get_llm)) -> BaseRetriever:
+    embedding = HuggingFaceEmbeddings(model_name=config["EmbeddingModel"])
+    vector_store = QdrantVectorStore.from_existing_collection(
+        embedding=embedding,
+        collection_name=config["VectorStoreCollectionName"],
+        url=config["VectorStoreURL"],
+    )
+    return MultiQueryRetriever.from_llm(retriever=vector_store.as_retriever(), llm=llm)
 
 
 def get_web_search_tool() -> BaseTool:
@@ -18,9 +33,14 @@ def get_web_search_tool() -> BaseTool:
 
 def get_knowledge_agent(
     llm: BaseChatModel = Depends(get_llm),
+    vector_store_retriever: BaseRetriever = Depends(get_vector_store_retriever),
     web_search_tool: BaseTool = Depends(get_web_search_tool),
 ) -> KnowledgeAgent:
-    return KnowledgeAgent(llm=llm, web_search_tool=web_search_tool)
+    return KnowledgeAgent(
+        llm=llm,
+        vector_store_retriever=vector_store_retriever,
+        web_search_tool=web_search_tool,
+    )
 
 
 def get_customer_support_agent() -> CustomerSupportAgent:

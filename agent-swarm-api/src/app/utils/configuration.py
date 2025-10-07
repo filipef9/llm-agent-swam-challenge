@@ -15,4 +15,7 @@ class Configuration:
             "APIVersion": os.getenv("API_VERSION"),
             "APIDescription": os.getenv("API_DESCRIPTION"),
             "APIRootPath": os.getenv("API_ROOT_PATH"),
+            "VectorStoreCollectionName": os.getenv("VECTOR_STORE_COLLECTION_NAME"),
+            "VectorStoreURL": os.getenv("VECTOR_STORE_URL"),
+            "EmbeddingModel": os.getenv("EMBEDDING_MODEL"),
         }
