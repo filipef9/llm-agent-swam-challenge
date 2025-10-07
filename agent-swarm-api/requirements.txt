@@ -1,3 +1,4 @@
 fastapi[standard]
 langgraph
 langchain-anthropic
+langchain-tavily

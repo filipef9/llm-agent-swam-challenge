@@ -12,6 +12,6 @@ class KnowledgeAgentState(BaseModel):
 
 
 class RouterRetriever(BaseModel):
-    """Retriever to use."""
+    """Select retriever to use."""
 
     selected_retriever: Literal["vector_store", "web_search"]

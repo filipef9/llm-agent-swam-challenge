@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Literal
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -8,13 +9,14 @@ from langchain_core.prompts import (
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
 )
+from langchain_core.tools import BaseTool
 from langgraph.graph import END, START, StateGraph
 
 from app.domain.models import KnowledgeAgentState, RouterRetriever
 
 
 class KnowledgeAgent:
-    def __init__(self, llm: BaseChatModel):
+    def __init__(self, llm: BaseChatModel, web_search_tool: BaseTool):
         graph = StateGraph(KnowledgeAgentState)
 
         graph.add_node("router_question", self.__router_question_node)
@@ -43,6 +45,7 @@ class KnowledgeAgent:
 
         self.graph = graph
         self.llm = llm
+        self.web_search_tool = web_search_tool
 
     def __router_question_node(self, state: KnowledgeAgentState) -> KnowledgeAgentState:
         system_prompt = SystemMessagePromptTemplate.from_template(
@@ -51,13 +54,14 @@ class KnowledgeAgent:
             Use the vectore store for questions about the company's products and services. 
             You do not need to be stringet with the keywords in the question related to 
             these topics. Otherwise, for general purpose questions, use web search. 
-
-            Given the following user message, respond with the retriever to use.
         """
         )
 
         user_prompt = HumanMessagePromptTemplate.from_template(
-            """user message: {message}"""
+            """
+            Given the following user message, respond with the retriever to use.
+            <user-message>{message}</user-message>
+            """
         )
 
         prefill_assistant_prompt = AIMessagePromptTemplate.from_template(
@@ -83,7 +87,13 @@ class KnowledgeAgent:
     def __retriever_from_web_search_node(
         self, state: KnowledgeAgentState
     ) -> KnowledgeAgentState:
-        return {"knowledgebase": "mock documents from web search"}
+        today = datetime.now().strftime("%d/%m/%y")
+        message = f"Hoje é {today}. {state.message}"
+        response = self.web_search_tool.invoke({"query": message})
+
+        knowledgebase = "\n\n".join(result["content"] for result in response["results"])
+
+        return {"knowledgebase": knowledgebase}
 
     def __call_selected_retriever(
         self, state: KnowledgeAgentState
@@ -92,18 +102,27 @@ class KnowledgeAgent:
 
     def __answer_question_node(self, state: KnowledgeAgentState) -> KnowledgeAgentState:
         system_prompt = SystemMessagePromptTemplate.from_template(
-            """
-            You are an assistant for question-answering tasks.
-            Use the following pieces of retrieved context to answer the question.
-            If you don't know the answer, just say that you don't know.
-            Answer always in portuguese.
-        """
+            """You are an assistant for question-answering tasks."""
         )
+
+        today = datetime.now().strftime("%d/%m/%y")
 
         user_prompt = HumanMessagePromptTemplate.from_template(
             """
-            Question: {message}
-            Context: {documents}
+            Today is {today}.
+
+            Use the following pieces of retrieved context to answer the question:
+            <context>
+            {documents}
+            </context>
+
+            <instructions>
+            1. If you don't know the answer, just say that you don't know.
+            2. Always respond in the same language as the question.
+            </instructions>
+
+            Here is the question:
+            <question>{message}</question>
         """
         )
 
@@ -113,7 +132,9 @@ class KnowledgeAgent:
         message = state.message
 
         chain = answer_prompt | self.llm | StrOutputParser()
-        response = chain.invoke({"documents": documents, "message": message})
+        response = chain.invoke(
+            {"today": today, "documents": documents, "message": message}
+        )
 
         return {"answer": response}
 
