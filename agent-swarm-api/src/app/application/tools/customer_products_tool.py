@@ -13,7 +13,7 @@ class GetCustomerProductsTool(BaseTool):
 
     name = "get_customer_products_and_status"
     description = (
-        "Retrieves the acquired products (e.g., card machines) and account status of an InfinitePay customer"
+        "Retrieves the acquired products (e.g., card machines) and account status of an InfinitePay customer. "
         "Use this for questions about what products the customer has or their general account status."
     )
     args_schema: type[BaseModel] = ProductsStatusInput
