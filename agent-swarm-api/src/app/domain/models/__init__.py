@@ -1,4 +1,5 @@
 from .chat import ChatRequest, ChatResponse
+from .customer_products import Product, Products, ProductsStatusInput
 from .customer_support_agent import CustomerSupportAgentState
 from .health_check import HealthCheckResponse
 from .knowledge_agent import KnowledgeAgentState, RouterRetriever
@@ -13,4 +14,7 @@ __all__ = [
     "KnowledgeAgentState",
     "RouterRetriever",
     "CustomerSupportAgentState",
+    "Products",
+    "Product",
+    "ProductsStatusInput",
 ]

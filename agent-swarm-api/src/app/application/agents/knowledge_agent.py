@@ -130,6 +130,7 @@ class KnowledgeAgent:
             <instructions>
             1. If you don't know the answer, just say that you don't know.
             2. Always respond in the same language as the question.
+            3. Keep your response terse.
             </instructions>
 
             Here is the question:
