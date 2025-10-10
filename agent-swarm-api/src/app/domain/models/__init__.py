@@ -1,4 +1,11 @@
 from .chat import ChatRequest, ChatResponse
+from .customer_financial_information import (
+    CustomerFinancialInfoInput,
+    Receivable,
+    Receivables,
+    Transaction,
+    Transactions,
+)
 from .customer_products import Product, Products, ProductsStatusInput
 from .customer_support_agent import CustomerSupportAgentState
 from .health_check import HealthCheckResponse
@@ -17,4 +24,9 @@ __all__ = [
     "Products",
     "Product",
     "ProductsStatusInput",
+    "CustomerFinancialInfoInput",
+    "Receivable",
+    "Receivables",
+    "Transaction",
+    "Transactions",
 ]

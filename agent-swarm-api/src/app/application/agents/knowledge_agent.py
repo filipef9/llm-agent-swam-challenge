@@ -133,7 +133,7 @@ class KnowledgeAgent:
             3. Keep your response terse.
             </instructions>
 
-            Here is the question:
+            Here is the user question:
             <question>{message}</question>
         """
         )
