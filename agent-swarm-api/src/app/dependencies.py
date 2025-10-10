@@ -9,7 +9,19 @@ from langchain_qdrant import QdrantVectorStore
 from langchain_tavily import TavilySearch
 
 from app.application.agents import CustomerSupportAgent, KnowledgeAgent, RouterAgent
+from app.application.tools import (
+    GetCustomerFinancialInformationTool,
+    GetCustomerProductsTool,
+)
 from app.application.usecases import ChatUseCase
+from app.domain.repositories import (
+    CustomerFinancialInformationRepository,
+    CustomerProductsRepository,
+)
+from app.infrastructure.repositories import (
+    MockCustomerFinancialInformationRepositoryImpl,
+    MockCustomerProductsRepositoryImpl,
+)
 from app.utils import config
 
 
@@ -43,8 +55,42 @@ def get_knowledge_agent(
     )
 
 
-def get_customer_support_agent() -> CustomerSupportAgent:
-    return CustomerSupportAgent()
+def get_customer_products_repository() -> CustomerProductsRepository:
+    return MockCustomerProductsRepositoryImpl()
+
+
+def get_customer_products_tool(
+    repository: CustomerProductsRepository = Depends(get_customer_products_repository),
+) -> BaseTool:
+    return GetCustomerProductsTool(repository=repository)
+
+
+def get_customer_financial_information_repository() -> (
+    CustomerFinancialInformationRepository
+):
+    return MockCustomerFinancialInformationRepositoryImpl()
+
+
+def get_customer_financial_information_tool(
+    repository: CustomerFinancialInformationRepository = Depends(
+        get_customer_financial_information_repository
+    ),
+) -> BaseTool:
+    return GetCustomerFinancialInformationTool(repository=repository)
+
+
+def get_customer_support_agent(
+    llm: BaseChatModel = Depends(get_llm),
+    customer_products_tool: BaseTool = Depends(get_customer_products_tool),
+    customer_financial_information_tool: BaseTool = Depends(
+        get_customer_financial_information_tool
+    ),
+) -> CustomerSupportAgent:
+    return CustomerSupportAgent(
+        llm=llm,
+        customer_products_tool=customer_products_tool,
+        customer_financial_information_tool=customer_financial_information_tool,
+    )
 
 
 def get_router_agent(

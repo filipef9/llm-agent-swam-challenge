@@ -10,7 +10,7 @@ class MockCustomerProductsRepositoryImpl(CustomerProductsRepository):
     def __init__(self):
         pass
 
-    def get_products_for(customer_id: str) -> Optional[Products]:
+    def get_products_for(self, customer_id: str) -> Optional[Products]:
         customer_data = MOCK_CUSTOMER_DB.get(customer_id)
 
         if not customer_data:
