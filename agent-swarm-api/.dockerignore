@@ -1,0 +1,11 @@
+.venv/
+.vscode/
+.env
+.env.template
+.flake8
+.gitignore
+agent-swarm-graph.mermaid
+agent-swarm-graph.png
+init.sh
+pip-install.sh
+run-locally.sh

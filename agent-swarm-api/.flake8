@@ -1,0 +1,44 @@
+# Arquivo de configuração para o flake8
+# Documentação do Flake8 https://flake8.pycqa.org/
+
+[flake8]
+
+# Regras que serão ignoradas:
+# Lista com todas as regras https://www.flake8rules.com/
+# E501 - Line too long (82 > 79 characters)
+# W291 - Trailing whitespace
+# W293 - Blank line contains whitespace
+extend-ignore = 
+    E501,
+    W291,
+    W293,
+    E712
+# Lista de arquivos nos quais não serão verificadas as regras.
+# Default: .svn,CVS,.bzr,.hg,.git,__pycache__,.tox,.nox,.eggs,*.egg
+# Incluir apenas arquivos .py ou diretórios que contém arquivos .py
+exclude = 
+        conf/*
+        dev/*,
+        docs/*,
+        .env/*,
+        .git/*,
+        .dev/*,
+        build/*,
+        dist/*,
+        .ipynb_checkpoints/*.
+        .ipynb_checkpoints
+        discovery/*
+        .venv/*
+
+# Complexidade
+# Define o valor máximo para a complexidade ciclomática para um bloco de código
+# Exemplo de código e complexidade https://www.flake8rules.com/rules/C901.html
+# De acordo com o artigo original de MacCabe, esta complexidade não deveria passar de 10.
+# http://literateprogramming.com/mccabe.pdf
+max-complexity = 100
+
+# Relatórios
+# statistics - Conta o número de ocorrências de cada erro/warning e mostra um relatório
+# show-source - Mostra o codigo que esta gerando erro/warning 
+statistics = True
+show-source = True

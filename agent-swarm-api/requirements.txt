@@ -1,0 +1,7 @@
+fastapi[standard]
+langgraph
+langchain-anthropic
+langchain-tavily
+langchain-qdrant
+langchain-huggingface
+sentence-transformers

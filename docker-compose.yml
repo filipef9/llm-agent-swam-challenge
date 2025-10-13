@@ -1,0 +1,30 @@
+services:
+
+  qdrant:
+    extends:
+      file: ./rag-data-ingestion-pipeline/docker/qdrant/qdrant.yml
+      service: qdrant
+
+  rag-data-ingestion-pipeline:
+    container_name: rag-data-ingestion-pipeline
+    image: rag-data-ingestion-pipeline
+    build: ./rag-data-ingestion-pipeline
+    env_file:
+      - ./rag-data-ingestion-pipeline/.env
+    depends_on:
+      - qdrant
+
+  agent-swarm-api:
+    container_name: agent-swarm-api
+    image: agent-swarm-api
+    build: ./agent-swarm-api
+    ports:
+      - 127.0.0.1:8080:8080
+    env_file:
+      - ./agent-swarm-api/.env
+    depends_on:
+      - rag-data-ingestion-pipeline
+
+networks:
+  agent_swarm_network:
+    driver: bridge

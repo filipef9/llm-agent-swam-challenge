@@ -1,0 +1,37 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	router(router)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> router;
+	router -.-> customer_support_agent\3a__start__;
+	router -.-> knowledge_agent\3arouter_question;
+	customer_support_agent\3areturn_final_answer --> __end__;
+	knowledge_agent\3aanswer_question --> __end__;
+	subgraph knowledge_agent
+	knowledge_agent\3arouter_question(router_question)
+	knowledge_agent\3aretriever_from_vector_store(retriever_from_vector_store)
+	knowledge_agent\3aretriever_from_web_search(retriever_from_web_search)
+	knowledge_agent\3aanswer_question(answer_question)
+	knowledge_agent\3aretriever_from_vector_store --> knowledge_agent\3aanswer_question;
+	knowledge_agent\3aretriever_from_web_search --> knowledge_agent\3aanswer_question;
+	knowledge_agent\3arouter_question -. &nbsp;vector_store&nbsp; .-> knowledge_agent\3aretriever_from_vector_store;
+	knowledge_agent\3arouter_question -. &nbsp;web_search&nbsp; .-> knowledge_agent\3aretriever_from_web_search;
+	end
+	subgraph customer_support_agent
+	customer_support_agent\3a__start__(<p>__start__</p>)
+	customer_support_agent\3aassistant(assistant)
+	customer_support_agent\3atools(tools)
+	customer_support_agent\3areturn_final_answer(return_final_answer)
+	customer_support_agent\3a__start__ --> customer_support_agent\3aassistant;
+	customer_support_agent\3aassistant -. &nbsp;__end__&nbsp; .-> customer_support_agent\3areturn_final_answer;
+	customer_support_agent\3aassistant -.-> customer_support_agent\3atools;
+	customer_support_agent\3atools --> customer_support_agent\3aassistant;
+	end
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

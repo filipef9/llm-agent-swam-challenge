@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "vscodevim.vim",
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.flake8",
+        "ms-python.isort",
+        "oderwat.indent-rainbow",
+        "vscode-icons-team.vscode-icons"
+    ]
+}
