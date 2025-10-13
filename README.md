@@ -47,7 +47,7 @@ docker-compose logs -f
 ```
 
 4. Once the services are up:
-   - The **Qdrant vector database** wil be available at `http://localhost:6333`
+   - The **Qdrant vector database** wil be available at `http://localhost:6333/dashboard`
    - The **API server** will be accessible at `http://localhost:8080`
 
 ### Testing the API
