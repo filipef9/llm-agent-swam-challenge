@@ -1,3 +1,4 @@
+import os
 from langchain_docling import DoclingLoader
 from langchain_docling.loader import ExportType
 from langchain_text_splitters import MarkdownHeaderTextSplitter
@@ -5,6 +6,9 @@ from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
+from dotenv import load_dotenv
+
+_ = load_dotenv()
 
 
 def main():
@@ -28,9 +32,11 @@ def main():
         "https://www.infinitepay.io/cartao",
         "https://www.infinitepay.io/rendimento",
     ]
-    EMBED_MODEL_ID = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+    EMBED_MODEL_ID = os.getenv("EMBEDDING_MODEL")
     EXPORT_TYPE = ExportType.MARKDOWN
-    COLLECTION_NAME = "infinitepay_kb"
+    COLLECTION_NAME = os.getenv("VECTOR_STORE_COLLECTION_NAME")
+    VECTOR_STORE_HOST = os.getenv("VECTOR_STORE_HOST")
+    VECTOR_STORE_PORT = os.getenv("VECTOR_STORE_PORT")
 
     loader = DoclingLoader(file_path=KB_URLS, export_type=EXPORT_TYPE)
 
@@ -52,7 +58,7 @@ def main():
     embedding = HuggingFaceEmbeddings(model_name=EMBED_MODEL_ID)
 
     # client = QdrantClient(":memory:")
-    client = QdrantClient(url="localhost", port=6333, timeout=60)
+    client = QdrantClient(url=VECTOR_STORE_HOST, port=VECTOR_STORE_PORT, timeout=60)
 
     client.create_collection(
         collection_name=COLLECTION_NAME,

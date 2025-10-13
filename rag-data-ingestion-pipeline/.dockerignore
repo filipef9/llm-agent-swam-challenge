@@ -1,0 +1,4 @@
+.venv/
+.vscode/
+docker/
+.gitignore
